@@ -1,6 +1,7 @@
 import sbt._
 
 object Dependencies {
+  
   val resolutionRepos = Seq(
     "Sonatype OSS Releases"   at "http://oss.sonatype.org/content/repositories/releases/",
     "Typesafe"                at "http://repo.typesafe.com/typesafe/releases/",
@@ -8,6 +9,8 @@ object Dependencies {
   )
 
   object V {
+    val avro      = "1.8.2"
+    val circe     = "0.9.3"
     val logback   = "1.2.3"
     val logging   = "3.9.2"
 
@@ -16,10 +19,14 @@ object Dependencies {
   }
 
   val Libraries = Seq(
-    "ch.qos.logback"              % "logback-classic" % V.logback,
-    "com.typesafe.scala-logging" %% "scala-logging"   % V.logging,
+    "ch.qos.logback"              %   "logback-classic" % V.logback,
+    "com.typesafe.scala-logging"  %%  "scala-logging"   % V.logging,
+    "io.circe"                    %%  "circe-core"      % V.circe,
+    "io.circe"                    %%  "circe-generic"   % V.circe,
+    "io.circe"                    %%  "circe-parser"    % V.circe,
+    "org.apache.avro"             %   "avro"            % V.avro,
 
     // Test
-    "org.scalatest"              %% "scalatest"       % V.scalatest % "test"
+    "org.scalatest"               %%  "scalatest"       % V.scalatest % "test"
   )
 }
