@@ -21,7 +21,7 @@ CREATE_CREDENTIAL_FILES="y"
 KEYSTORE_SIGN_REQUEST="cert-file"
 KEYSTORE_SIGN_REQUEST_SRL="ca-cert.srl"
 KEYSTORE_SIGNED_CERT="cert-signed"
-
+KEYSTORE_ALIAS="localhost"
 CA_CERT_FILE="ca-cert"
 
 ### END VARIABLE SECTION
@@ -111,7 +111,7 @@ fi
 # Grab pieces from DN
 C_NAME=$(echo $DISTINGUISHED_NAME | awk -F"CN=" '{print $2}' | awk -F"," '{print $1}') #"Unknown"
 ORG_UNIT=$(echo $DISTINGUISHED_NAME | awk -F"OU=" '{print $2}' | awk -F"," '{print $1}') #"Unknown"
-ORG=$(echo $DISTINGUISHED_NAME | awk -F"O=" '{print $2}' | awk -F"," '{print $1}') #"CapitalOne"
+ORG=$(echo $DISTINGUISHED_NAME | awk -F"O=" '{print $2}' | awk -F"," '{print $1}') #"Unknown"
 CITY=$(echo $DISTINGUISHED_NAME | awk -F"L=" '{print $2}' | awk -F"," '{print $1}') #"SF"
 STATE=$(echo $DISTINGUISHED_NAME | awk -F"ST=" '{print $2}' | awk -F"," '{print $1}') #"California"
 COUNTRY_CODE=$(echo $DISTINGUISHED_NAME | awk -F"C=" '{print $2}' | awk -F"," '{print $1}') #"US"
@@ -120,8 +120,6 @@ COUNTRY_CODE=$(echo $DISTINGUISHED_NAME | awk -F"C=" '{print $2}' | awk -F"," '{
 DISTINGUISHED_NAME_OPENSSL="/CN=$C_NAME/OU=$ORG_UNIT/O=$ORG/L=$CITY/ST=$STATE/C=$COUNTRY_CODE"
 DISTINGUISHED_NAME_KEYTOOL="CN=$C_NAME, OU=$ORG_UNIT, O=$ORG, L=$CITY, S=$STATE, C=$COUNTRY_CODE"
 
-# TODO: currently generates a trust store and private key each time
-# TODO: allow using already generated truststore and private key
 mkdir -p $TRUSTSTORE_WORKING_DIRECTORY
 echo
 echo "Generating a trust store private key with the specified SSLKEY_PWD."
@@ -152,8 +150,6 @@ echo " - Trust store private key: $trust_store_private_key_file"
 # Don't need the cert because it's in the trust store.
 rm $TRUSTSTORE_WORKING_DIRECTORY/$CA_CERT_FILE
 
-# TODO: This script will create only one keystore. Each broker and logical client needs its own keystore
-# TODO: Run this script multiple times for multiple keystores
 mkdir -p $KEYSTORE_WORKING_DIRECTORY
 echo
 echo "Generating a keystore with the specified KEYSTORE_PWD. Each broker and logical client needs its own, keystore."
@@ -162,7 +158,7 @@ echo "      this host. However, at some point, this may change. As such, make th
 echo "      the FQDN. Some operating systems call the CN prompt 'first / last name'"
 # To learn more about CNs and FQDNs, read:
 # https://docs.oracle.com/javase/7/docs/api/javax/net/ssl/X509ExtendedTrustManager.html
-keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -storepass $KEYSTORE_PWD -keypass $SSLKEY_PWD -dname "$DISTINGUISHED_NAME_KEYTOOL" -alias localhost -validity $VALIDITY_IN_DAYS -genkey -keyalg RSA
+keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -storepass $KEYSTORE_PWD -keypass $SSLKEY_PWD -dname "$DISTINGUISHED_NAME_KEYTOOL" -alias $KEYSTORE_ALIAS -validity $VALIDITY_IN_DAYS -genkey -keyalg RSA
 
 echo
 echo "'$KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME' now contains a key pair and a"
@@ -175,7 +171,7 @@ keytool -keystore $trust_store_file -export -alias CARoot -rfc -file $CA_CERT_FI
 
 echo
 echo "Certificate signing request will be made to the keystore, using KEYSTORE_PWD"
-keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -alias localhost -certreq -file $KEYSTORE_SIGN_REQUEST -storepass $KEYSTORE_PWD
+keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -alias $KEYSTORE_ALIAS -certreq -file $KEYSTORE_SIGN_REQUEST -storepass $KEYSTORE_PWD
 
 echo
 echo "Trust store's private key (CA) will sign the keystore's certificate, using SSLKEY_PWD"
@@ -189,7 +185,7 @@ rm $CA_CERT_FILE
 
 echo
 echo "Keystore's signed certificate will be imported back into the keystore, using KEYSTORE_PWD"
-keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -alias localhost -import -file $KEYSTORE_SIGNED_CERT -storepass $KEYSTORE_PWD
+keytool -keystore $KEYSTORE_WORKING_DIRECTORY/$KEYSTORE_FILENAME -alias $KEYSTORE_ALIAS -import -file $KEYSTORE_SIGNED_CERT -storepass $KEYSTORE_PWD
 
 echo
 echo "All done!"
