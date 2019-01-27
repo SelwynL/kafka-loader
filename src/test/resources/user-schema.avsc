@@ -1,5 +1,5 @@
 {
-  "namespace": "kproducer.avro",
+  "namespace": "kafkaloader.avro",
    "type": "record",
    "name": "User",
    "fields":[
