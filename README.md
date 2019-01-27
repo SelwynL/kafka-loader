@@ -8,7 +8,7 @@ sbt clean run
 ```
 
 # Build Artifact
-To build a fat JAR whichvincludes all dependencies
+To build a fat JAR which includes all dependencies
 ```
 sbt clean assembly
 ```

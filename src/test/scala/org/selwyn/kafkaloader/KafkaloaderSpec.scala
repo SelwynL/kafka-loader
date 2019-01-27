@@ -1,5 +1,13 @@
 package org.selwyn.kafkaloader
 
-object KafkaloaderMain extends App with LazyLogging {
-  logger.info("Hello, kafka-loader!")
+import org.scalatest.{Matchers, WordSpecLike}
+
+class KafkaloaderSpec extends WordSpecLike with Matchers {
+  
+  "Kafkaloader" must {
+
+    "be true" in {
+      true should be(true)
+    }
+  }
 }
