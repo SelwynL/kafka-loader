@@ -1,0 +1,13 @@
+target/
+project/plugins/project/
+project/target/
+project/project/
+project/boot/
+
+*.class
+*.log
+*.jar
+
+.DS_Store
+.cache
+.history
