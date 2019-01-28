@@ -36,9 +36,8 @@ object Filler {
       if (generated.size == n) generated
       else {
         values match {
-          case head :: (tail: Seq[String]) => iter(tail, generated :+ head)
-          case head :: Nil                 => iter(initialEnumValues.toList, generated :+ head)
-          case Nil                         => iter(initialEnumValues.toList, generated)
+          case head :: tail => iter(tail, generated :+ head)
+          case Nil          => iter(initialEnumValues.toList, generated)
         }
       }
     }

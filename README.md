@@ -63,7 +63,7 @@ Use `curl` and `jq` to add a schema associated with the `users` topic
 ```
 TOPIC_NAME=users
 SCHEMA_FILE_PATH=src/test/resources/user-schema.avsc
-curl -X POST -H "Content-Type: application/json" --data "$(jq '{"schema": . | tostring }' ${SCHEMA_FILE_PATH})" http://localhost:8081/subjects/${TOPIC_NAME}-value/versions
+curl -X POST -H "Content-Type: application/json" --data "$(jq '{"schema": . | tostring }' $SCHEMA_FILE_PATH)" http://localhost:8081/subjects/$TOPIC_NAME-value/versions
 ```
 
 
