@@ -5,5 +5,10 @@ import org.selwyn.kafkaloader.kafka.SchemaRegistry
 
 object KafkaloaderMain extends App with LazyLogging {
 
-  logger.info(s"Result: ${SchemaRegistry.getSchema("http://localhost:8081", "users")}")
+  val result = for {
+    client <- SchemaRegistry.getClient("http://localhost:8081")
+    schema <- SchemaRegistry.getSchema(client, "users")
+  } yield schema
+
+  logger.info(s"Result: $result")
 }
