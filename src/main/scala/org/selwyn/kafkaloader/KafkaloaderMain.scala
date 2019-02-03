@@ -2,14 +2,16 @@ package org.selwyn.kafkaloader
 
 import org.selwyn.kafkaloader.avro.AvroCodec
 import org.selwyn.kafkaloader.kafka.{Kafka, SchemaRegistry}
-import org.selwyn.kafkaloader.loader.PropertiesLoader
+import org.selwyn.kafkaloader.loader.{FileLoader, PropertiesLoader}
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.Json
+import io.circe.parser._
 import org.apache.kafka.clients.producer.RecordMetadata
 
 object KafkaloaderMain extends App with LazyLogging {
 
-  val kafkaPropertiesFile = "etc/kafka/local-kafka.properties"
+  val kafkaPropertiesFile     = "etc/kafka/local-kafka.properties"
+  val templateJsonPayloadFile = "etc/payload/user.json"
 
   val produceFunction: Either[Throwable, (String, Json) => Either[Throwable, RecordMetadata]] = for {
     properties   <- PropertiesLoader.load(kafkaPropertiesFile)
@@ -20,5 +22,11 @@ object KafkaloaderMain extends App with LazyLogging {
     producer     <- Kafka.producerClient(properties)
   } yield Kafka.produce(topic, new AvroCodec(schema))(producer)
 
+  val jsonPayloadTemplate: Either[Throwable, Json] = for {
+    jsonString <- FileLoader.asString(templateJsonPayloadFile)
+    json       <- parse(jsonString)
+  } yield json
+
+  logger.info(s"Json Payload Template: $jsonPayloadTemplate")
   logger.info(s"Produce Function: $produceFunction")
 }
