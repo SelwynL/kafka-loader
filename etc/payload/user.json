@@ -1,0 +1,8 @@
+{
+  "id": 1234,
+  "name": "Selwyn",
+  "level": "OWNER",
+  "email": {
+    "string": "email@gmail.com"
+  }
+}

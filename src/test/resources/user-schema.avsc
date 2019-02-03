@@ -12,6 +12,19 @@
           "type": "string"
        },
        {
+          "name": "level",
+          "type": {
+              "name": "Level",
+              "type": "enum",
+              "symbols": [
+                "OWNER",
+                "ADMIN",
+                "WRITE",
+                "READ_ONLY"
+             ]
+          }
+       },
+       {
           "name": "email", 
           "type": ["null", "string"], 
           "default": null

@@ -12,7 +12,7 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
 
   def schemaFromResource(filename: String): Schema = {
     new Parser()
-      .parse(Source.fromURL(getClass.getResource(s"/${filename}")).mkString)
+      .parse(Source.fromURL(getClass.getResource(s"/$filename")).mkString)
   }
 
   val userSchema: Schema       = schemaFromResource("user-schema.avsc")
@@ -28,6 +28,7 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
         {
             "id": 1234,
             "name": "john doe",
+            "level": "OWNER",
             "email" : {
               "string" : "john.doe@gmail.com"
             }
@@ -37,6 +38,7 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
       val expected: GenericRecord = new GenericData.Record(userSchema)
       expected.put("id", 1234)
       expected.put("name", "john doe")
+      expected.put("level", "OWNER")
       expected.put("email", "john.doe@gmail.com")
 
       val result = userAvroCodec.decodeJson(json)
@@ -49,13 +51,15 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
       val json = parse("""
         {
             "id": 1234,
-            "name": "john doe"
+            "name": "john doe",
+            "level": "OWNER"
         }
         """).getOrElse(throw new RuntimeException("Unable parse json string"))
 
       val expected: GenericRecord = new GenericData.Record(userSchema)
       expected.put("id", 1234)
       expected.put("name", "john doe")
+      expected.put("level", "OWNER")
       expected.put("email", null)
 
       val result = userAvroCodec.decodeJson(json)
@@ -65,14 +69,18 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
 
     "encode GenericRecord to Json" in {
       val userRecord: GenericRecord = new GenericData.Record(userSchema)
+      val levelSchema: Schema       = userSchema.getField("level").schema
+
       userRecord.put("id", 1234)
       userRecord.put("name", "john doe")
+      userRecord.put("level", new GenericData.EnumSymbol(levelSchema, "OWNER"))
       userRecord.put("email", "john.doe@gmail.com")
 
       val expected = parse("""
         {
             "id": 1234,
             "name": "john doe",
+            "level": "OWNER",
             "email" : {
               "string" : "john.doe@gmail.com"
             }
@@ -80,26 +88,30 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
         """)
 
       val encoded: Either[Throwable, Json] =
-        userAvroCodec.encodeJson(userRecord, true)
+        userAvroCodec.encodeJson(userRecord, pretty = true)
       encoded should be(expected)
     }
 
     "fallback to default value for encode GenericRecord to Json" in {
       // missing email field should default to predefined value
       val userRecord: GenericRecord = new GenericData.Record(userSchema)
+      val levelSchema: Schema       = userSchema.getField("level").schema
+
       userRecord.put("id", 1234)
       userRecord.put("name", "john doe")
+      userRecord.put("level", new GenericData.EnumSymbol(levelSchema, "OWNER"))
 
       val expected = parse("""
         {
             "id": 1234,
             "name": "john doe",
+            "level": "OWNER",
             "email": null
         }
         """)
 
       val encoded: Either[Throwable, Json] =
-        userAvroCodec.encodeJson(userRecord, true)
+        userAvroCodec.encodeJson(userRecord, pretty = true)
       encoded should be(expected)
     }
 
@@ -191,7 +203,7 @@ class AvroCodecSpec extends WordSpecLike with Matchers {
       )
 
       val encoded: Either[Throwable, Json] =
-        lensAvroCodec.encodeJson(lensConfigRecord, true)
+        lensAvroCodec.encodeJson(lensConfigRecord, pretty = true)
       encoded should be(expected)
     }
   }

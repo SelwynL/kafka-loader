@@ -3,7 +3,6 @@ package org.selwyn.kafkaloader
 import org.selwyn.kafkaloader.avro.AvroCodec
 import org.selwyn.kafkaloader.kafka.{Kafka, SchemaRegistry}
 import org.selwyn.kafkaloader.loader.PropertiesLoader
-
 import com.typesafe.scalalogging.LazyLogging
 import io.circe.Json
 import org.apache.kafka.clients.producer.RecordMetadata
