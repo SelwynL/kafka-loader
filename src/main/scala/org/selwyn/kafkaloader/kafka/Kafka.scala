@@ -24,9 +24,8 @@ object Kafka {
     Try(new KafkaProducer[String, GenericRecord](properties)).toEither
   }
 
-  def produce(topic: String, avroCodec: AvroCodec)(client: Producer[String, GenericRecord])(
-      key: String,
-      payload: Json): Either[Throwable, RecordMetadata] =
+  def produce(topic: String, avroCodec: AvroCodec)(
+      client: Producer[String, GenericRecord])(key: String, payload: Json): Either[Throwable, RecordMetadata] =
     avroCodec
       .decodeJson(payload)
       .flatMap(record => Try(client.send(new ProducerRecord(topic, key, record)).get).toEither)
