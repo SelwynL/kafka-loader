@@ -4,7 +4,6 @@ import com.typesafe.scalalogging.LazyLogging
 import io.confluent.kafka.schemaregistry.client.{CachedSchemaRegistryClient, SchemaRegistryClient}
 import org.apache.avro.Schema
 import org.apache.avro.Schema.Parser
-
 import scala.util.Try
 
 object SchemaRegistry extends LazyLogging {

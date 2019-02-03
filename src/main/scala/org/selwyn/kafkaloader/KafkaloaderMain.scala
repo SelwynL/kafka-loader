@@ -1,14 +1,25 @@
 package org.selwyn.kafkaloader
 
+import org.selwyn.kafkaloader.avro.AvroCodec
+import org.selwyn.kafkaloader.kafka.{Kafka, SchemaRegistry}
+import org.selwyn.kafkaloader.loader.PropertiesLoader
+
 import com.typesafe.scalalogging.LazyLogging
-import org.selwyn.kafkaloader.kafka.SchemaRegistry
+import io.circe.Json
+import org.apache.kafka.clients.producer.RecordMetadata
 
 object KafkaloaderMain extends App with LazyLogging {
 
-  val result = for {
-    client <- SchemaRegistry.getClient("http://localhost:8081")
-    schema <- SchemaRegistry.getSchema(client, "users")
-  } yield schema
+  val kafkaPropertiesFile = "etc/kafka/local-kafka.properties"
 
-  logger.info(s"Result: $result")
+  val produceFunction: Either[Throwable, (String, Json) => Either[Throwable, RecordMetadata]] = for {
+    properties   <- PropertiesLoader.load(kafkaPropertiesFile)
+    topic        <- PropertiesLoader.getProperty(properties, "topic.subscriptions")
+    schemaRegUrl <- PropertiesLoader.getProperty(properties, "schema.registry.url")
+    client       <- SchemaRegistry.getClient(schemaRegUrl)
+    schema       <- SchemaRegistry.getSchema(client, topic)
+    producer     <- Kafka.producerClient(properties)
+  } yield Kafka.produce(producer)(topic, new AvroCodec(schema))
+
+  logger.info(s"Produce Function: $produceFunction")
 }
