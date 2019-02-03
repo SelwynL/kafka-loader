@@ -11,6 +11,7 @@ object Dependencies {
 
   object V {
     val avro      = "1.8.2"
+    val beachape  = "1.5.13"
     val confluent = "4.0.0"
     val circe     = "0.9.3"
     val logback   = "1.2.3"
@@ -23,6 +24,7 @@ object Dependencies {
 
   val Libraries = Seq(
     "ch.qos.logback"              %   "logback-classic"               % V.logback,
+    "com.beachape"                %%  "enumeratum"                    % V.beachape,
     "com.typesafe.scala-logging"  %%  "scala-logging"                 % V.logging,
     "io.confluent"                %   "kafka-avro-serializer"         % V.confluent,
     "io.confluent"                %   "kafka-schema-registry-client"  % V.confluent,
