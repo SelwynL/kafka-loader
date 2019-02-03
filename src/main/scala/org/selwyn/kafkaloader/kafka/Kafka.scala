@@ -24,7 +24,7 @@ object Kafka {
     Try(new KafkaProducer[String, GenericRecord](properties)).toEither
   }
 
-  def produce(client: Producer[String, GenericRecord])(topic: String, avroCodec: AvroCodec)(
+  def produce(topic: String, avroCodec: AvroCodec)(client: Producer[String, GenericRecord])(
       key: String,
       payload: Json): Either[Throwable, RecordMetadata] =
     avroCodec

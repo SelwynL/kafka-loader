@@ -19,7 +19,7 @@ object KafkaloaderMain extends App with LazyLogging {
     client       <- SchemaRegistry.getClient(schemaRegUrl)
     schema       <- SchemaRegistry.getSchema(client, topic)
     producer     <- Kafka.producerClient(properties)
-  } yield Kafka.produce(producer)(topic, new AvroCodec(schema))
+  } yield Kafka.produce(topic, new AvroCodec(schema))(producer)
 
   logger.info(s"Produce Function: $produceFunction")
 }
