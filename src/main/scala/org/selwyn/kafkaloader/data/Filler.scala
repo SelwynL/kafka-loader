@@ -11,14 +11,14 @@ object Filler {
   /**
     * Fills a Set with "n" strings containing UUID values
     */
-  val uuid: FillerFunction = (n: Int, _: String) => {
+  val uuid: FillerFunction = (n: Int, append: String) => {
     @tailrec
     def iter(generated: Set[String]): Set[String] = {
       val currentSize = generated.size
       if (currentSize == n) generated
       else {
         val diff = n - currentSize
-        iter(generated ++: List.fill(diff)(UUID.randomUUID.toString).toSet)
+        iter(generated ++: List.fill(diff)(s"${UUID.randomUUID.toString}$append").toSet)
       }
     }
 

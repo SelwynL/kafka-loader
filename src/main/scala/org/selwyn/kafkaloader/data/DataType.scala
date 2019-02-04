@@ -1,8 +1,8 @@
 package org.selwyn.kafkaloader.data
 
 import org.selwyn.kafkaloader.data.Filler.FillerFunction
-import enumeratum.{Enum, EnumEntry}
 
+import enumeratum.{Enum, EnumEntry}
 import scala.collection.immutable
 
 sealed abstract class DataType(override val entryName: String, val func: FillerFunction) extends EnumEntry

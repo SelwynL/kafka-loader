@@ -25,6 +25,19 @@ class FillerSpec extends WordSpecLike with Matchers {
       actual.size should be(size)
     }
 
+    "fill UUID set with appended value" in {
+      val size   = 5
+      val append = "!append"
+      val actual = Filler.uuid(size, append)
+
+      // since this returns a set, if the requested size is the result size then each is guaranteed unique
+      actual.size should be(size)
+      actual match {
+        case s: Set[String] =>
+          s.foreach((v: String) => assert(v.endsWith(append)))
+      }
+    }
+
     "fill ENUM sequence in config order" in {
       val size = 5
 
